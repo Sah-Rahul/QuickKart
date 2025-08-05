@@ -116,7 +116,6 @@ const AdminLayout: FC<ChildrenInterfaces> = ({ children }) => {
           <Breadcrumb items={getCurrentPath(pathName)} />
           <div
             style={{
-              height: "3000px",
               padding: 24,
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
