@@ -6,7 +6,6 @@ import {
   DeleteOutlined,
   EditOutlined,
   PlusCircleOutlined,
-  SearchOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
 import {
@@ -26,22 +25,44 @@ import {
 } from "antd";
 import axios from "axios";
 import Image from "next/image";
-import { useState } from "react";
-import useSWR from "swr";
+import { useEffect, useState } from "react";
+import useSWR, { mutate } from "swr";
+import debounce from "lodash/debounce";
 
 const Products = () => {
   const [openModal, setOpenModal] = useState(false);
   const [resetForm] = Form.useForm();
-  const { isLoading, data, error } = useSWR("/api/product", fetcher);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(12);
+  const [product, setProduct] = useState({ data: [], total: 0 });
+  const { isLoading, data, error } = useSWR(
+    `/api/product?page=${page}&limit=${limit}`,
+    fetcher
+  );
 
   const closeModal = () => {
     setOpenModal(false);
+    setEditId(null);
     resetForm.resetFields();
   };
 
-  const onSearch = (values: any) => {
-    console.log("Searching for:", values);
-  };
+  const onSearch = debounce(async (e: any) => {
+    try {
+      const values = e.target.value.trim();
+      const { data } = await axios.get(`/api/product?search=${values}`);
+      setProduct(data);
+      setPage(1);
+    } catch (error) {
+      clientCatchError(error);
+    }
+  }, 500);
+
+  useEffect(() => {
+    if (data) {
+      setProduct(data);
+    }
+  }, [data]);
 
   const createProduct = async (values: any) => {
     try {
@@ -51,35 +72,59 @@ const Products = () => {
         formData.append(key, values[key]);
       }
       await axios.post("/api/product", formData);
+      mutate(`/api/product?page=${page}&limit=${limit}`);
       message.success("product added successfully !");
       closeModal();
     } catch (error) {
       clientCatchError(error);
     }
   };
+
   if (isLoading) return <Skeleton active />;
   if (error) {
     return <Result status="error" title={error.message} />;
   }
+
+  const handlePagination = (page: number, limit: number) => {
+    setPage(page);
+    setLimit(limit);
+  };
+
+  const editProduct = (item: any) => {
+    setEditId(item._id);
+    setOpenModal(true);
+    resetForm.setFieldsValue(item);
+  };
+
+  const deleteProduct = async (id: string, item: any) => {
+    try {
+      await axios.delete(`/api/product/${id}`);
+      mutate(`/api/product?page=${page}&limit=${limit}`);
+      message.success(`${item.title} producted is deleted !`);
+    } catch (error) {
+      clientCatchError(error);
+    }
+  };
+  const updateProduct = async (values: any) => {
+    try {
+      await axios.put(`/api/product/${editId}`, values);
+      setOpenModal(false);
+      message.success(` producted is updated !`);
+      mutate(`/api/product?page=${page}&limit=${limit}`);
+    } catch (error) {
+      clientCatchError(error);
+    }
+  };
   return (
     <div className="flex flex-col gap-8">
       {/* Top Bar */}
       <div className="flex items-center justify-between">
-        <Form onFinish={onSearch}>
-          <Form.Item name="search" className="!mb-0">
-            <Input
-              className="!w-[300px]"
-              placeholder="Search product"
-              suffix={
-                <Button
-                  htmlType="submit"
-                  type="text"
-                  icon={<SearchOutlined />}
-                />
-              }
-            />
-          </Form.Item>
-        </Form>
+        <Input
+          className="!w-[300px]"
+          size="large"
+          placeholder="Search product"
+          onChange={onSearch}
+        />
 
         <Button
           onClick={() => setOpenModal(true)}
@@ -94,7 +139,7 @@ const Products = () => {
       {/* Product Grid */}
       <div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
-          {data.map((item: any, index: number) => (
+          {product.data.map((item: any, index: number) => (
             <Card
               key={index}
               hoverable
@@ -104,6 +149,7 @@ const Products = () => {
                   <Image
                     src={item.image}
                     fill
+                    priority
                     alt={`product-${index}`}
                     sizes="(max-width: 768px) 100vw, 25vw"
                     className="object-cover"
@@ -112,10 +158,16 @@ const Products = () => {
               }
               actions={[
                 <Tooltip title="Edit" key="edit">
-                  <EditOutlined className="text-blue-600" />
+                  <EditOutlined
+                    className="text-blue-600"
+                    onClick={() => editProduct(item)}
+                  />
                 </Tooltip>,
                 <Tooltip title="Delete" key="delete">
-                  <DeleteOutlined className="text-red-500" />
+                  <DeleteOutlined
+                    className="text-red-500"
+                    onClick={() => deleteProduct(item._id, item)}
+                  />
                 </Tooltip>,
               ]}
             >
@@ -125,22 +177,22 @@ const Products = () => {
               </h3>
 
               {/* Price & Discount Section */}
+
               <div>
-                <div className="flex items-center  justify-between">
-                  <span className="text-lg font-bold text-green-600">
-                    Rs {item.price}
-                  </span>
-                  <span className="text-sm line-through text-gray-500">
-                    Rs {item.discount}
-                  </span>
-                  <span className="text-xs font-semibold  px-2 py-[2px] rounded">
-                    ( {item.quantity}% Off)
-                  </span>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="font-semibold">
+                    Rs
+                    {(
+                      item.price -
+                      (item.price * item.discount) / 100
+                    ).toFixed()}
+                  </label>
+                  <del className="text-gray-600">Rs{item.price}</del>
+                  <label className="text-red-600">({item.discount}% OFF)</label>
                 </div>
+
                 <div className="mt-2">
-                  <Tag>20pics</Tag>
-                  <Tag>20pics</Tag>
-                  <Tag>20pics</Tag>
+                  <Tag>{item.quantity} pcs</Tag>
                 </div>
               </div>
             </Card>
@@ -148,7 +200,13 @@ const Products = () => {
         </div>
         {/* pagination here  */}
         <div className="flex justify-end">
-          <Pagination />
+          <Pagination
+            current={page}
+            total={product.total}
+            defaultPageSize={limit}
+            pageSizeOptions={[10, 20, 30, 40, 50]}
+            onChange={handlePagination}
+          />
         </div>
       </div>
 
@@ -164,7 +222,7 @@ const Products = () => {
         <Form
           layout="vertical"
           size="large"
-          onFinish={createProduct}
+          onFinish={editId ? updateProduct : createProduct}
           form={resetForm}
         >
           <Form.Item
@@ -245,8 +303,13 @@ const Products = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button htmlType="submit" type="primary" block>
-              Add Product
+            <Button
+              htmlType="submit"
+              type="primary"
+              block
+              icon={editId ? <UploadOutlined /> : null}
+            >
+              {editId ? "Update Product" : "Add Product"}
             </Button>
           </Form.Item>
         </Form>

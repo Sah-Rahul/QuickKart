@@ -58,16 +58,34 @@ export const GET = async (req: NextRequest) => {
   try {
     await ConnectDB();
     const { searchParams } = new URL(req.url);
+    const search = searchParams.get("search");
+    const page = Number(searchParams.get("page")) || 1;
+    const limit = Number(searchParams.get("limit")) || 12;
     const slug = searchParams.get("slug");
+    const skip = (page - 1) * limit;
+    const total = await productModel.countDocuments();
 
     if (slug) {
       const slugs = await productModel.distinct("slug");
       return res.json(slugs, { status: 200 });
     }
 
+    if (search) {
+      const product = await productModel
+        .find({ title: RegExp(search, "i") })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+      return res.json({ total, data: product });
+    }
     // If no slug, return all products
-    const products = await productModel.find().sort({ createdAt: -1 });
-    return res.json(products, { status: 200 });
+
+    const products = await productModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    return res.json({ total, data: products });
   } catch (err) {
     return serverCatchError(err);
   }
