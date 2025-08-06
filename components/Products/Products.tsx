@@ -1,10 +1,11 @@
 "use client";
 
+import clientCatchError from "@/utility/clilent-catch-errors";
+import fetcher from "@/utility/fetcher";
 import {
   DeleteOutlined,
   EditOutlined,
   PlusCircleOutlined,
-  PlusOutlined,
   SearchOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
@@ -14,27 +15,51 @@ import {
   Form,
   Input,
   InputNumber,
+  message,
   Modal,
-  Space,
+  Pagination,
+  Result,
+  Skeleton,
   Tag,
   Tooltip,
   Upload,
 } from "antd";
+import axios from "axios";
 import Image from "next/image";
 import { useState } from "react";
+import useSWR from "swr";
 
 const Products = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [resetForm] = Form.useForm();
+  const { isLoading, data, error } = useSWR("/api/product", fetcher);
+
   const closeModal = () => {
     setOpenModal(false);
+    resetForm.resetFields();
   };
 
   const onSearch = (values: any) => {
     console.log("Searching for:", values);
   };
 
-  const createProduct = (values: any) =>{
-    console.log(values)
+  const createProduct = async (values: any) => {
+    try {
+      values.image = values.image.file.originFileObj;
+      const formData = new FormData();
+      for (let key in values) {
+        formData.append(key, values[key]);
+      }
+      await axios.post("/api/product", formData);
+      message.success("product added successfully !");
+      closeModal();
+    } catch (error) {
+      clientCatchError(error);
+    }
+  };
+  if (isLoading) return <Skeleton active />;
+  if (error) {
+    return <Result status="error" title={error.message} />;
   }
   return (
     <div className="flex flex-col gap-8">
@@ -67,10 +92,9 @@ const Products = () => {
       </div>
 
       {/* Product Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
-        {Array(12)
-          .fill(0)
-          .map((_, index) => (
+      <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
+          {data.map((item: any, index: number) => (
             <Card
               key={index}
               hoverable
@@ -78,7 +102,7 @@ const Products = () => {
               cover={
                 <div className="relative w-full h-[220px]">
                   <Image
-                    src="/images/product.webp"
+                    src={item.image}
                     fill
                     alt={`product-${index}`}
                     sizes="(max-width: 768px) 100vw, 25vw"
@@ -97,20 +121,20 @@ const Products = () => {
             >
               {/* Product Title */}
               <h3 className="text-base font-semibold text-gray-800 truncate mb-1">
-                SGkdkjs
+                {item.title}
               </h3>
 
               {/* Price & Discount Section */}
               <div>
                 <div className="flex items-center  justify-between">
                   <span className="text-lg font-bold text-green-600">
-                    Rs 545
+                    Rs {item.price}
                   </span>
                   <span className="text-sm line-through text-gray-500">
-                    Rs 55654
+                    Rs {item.discount}
                   </span>
                   <span className="text-xs font-semibold  px-2 py-[2px] rounded">
-                    25% OFF
+                    ( {item.quantity}% Off)
                   </span>
                 </div>
                 <div className="mt-2">
@@ -121,6 +145,11 @@ const Products = () => {
               </div>
             </Card>
           ))}
+        </div>
+        {/* pagination here  */}
+        <div className="flex justify-end">
+          <Pagination />
+        </div>
       </div>
 
       {/* modal here  */}
@@ -132,16 +161,22 @@ const Products = () => {
         centered
         maskClosable={false}
       >
-        <Form layout="vertical" size="large" onFinish={createProduct}>
+        <Form
+          layout="vertical"
+          size="large"
+          onFinish={createProduct}
+          form={resetForm}
+        >
           <Form.Item
             label="Product Name"
-            name="productName"
+            name="title"
             rules={[{ required: true, message: "Please enter product name" }]}
           >
             <Input placeholder="Enter product name" />
           </Form.Item>
 
           <div style={{ display: "flex", gap: 16 }}>
+            {/* Price Field */}
             <Form.Item
               label="Price"
               name="price"
@@ -150,27 +185,43 @@ const Products = () => {
             >
               <InputNumber
                 min={0}
-                placeholder="0.00"
+                step={0.01}
+                precision={2}
                 style={{ width: "100%" }}
               />
             </Form.Item>
 
-            <Form.Item label="Discount (%)" name="discount" style={{ flex: 1 }}>
+            {/* Discount Field */}
+            <Form.Item
+              label="Discount (%)"
+              name="discount"
+              rules={[{ required: true, message: "Please enter discount" }]}
+              style={{ flex: 1 }}
+            >
               <InputNumber
                 min={0}
                 max={100}
+                step={1}
+                precision={0}
                 placeholder="0"
                 style={{ width: "100%" }}
               />
             </Form.Item>
 
+            {/* Quantity Field */}
             <Form.Item
               label="Quantity"
               name="quantity"
               rules={[{ required: true, message: "Please enter quantity" }]}
               style={{ flex: 1 }}
             >
-              <InputNumber min={1} placeholder="0" style={{ width: "100%" }} />
+              <InputNumber
+                min={1}
+                step={1}
+                precision={0}
+                placeholder="0"
+                style={{ width: "100%" }}
+              />
             </Form.Item>
           </div>
 
@@ -184,9 +235,8 @@ const Products = () => {
 
           <Form.Item label="Upload Image" name="image">
             <Upload
-          
+              fileList={[]}
               maxCount={1}
-              
               accept="image/*"
               listType="picture"
             >

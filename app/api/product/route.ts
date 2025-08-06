@@ -38,8 +38,9 @@ export const POST = async (req: NextRequest) => {
     const payload = {
       title: body.get("title"),
       description: body.get("description"),
-      price: body.get("price"),
-      discount: body.get("discount") ?? "0",
+      price: Number(body.get("price")),
+      discount: Number(body.get("discount") ?? "0"),
+      quantity: Number(body.get("quantity")),
       image: `/products/${fileName}`,
     };
 
@@ -55,7 +56,7 @@ export const POST = async (req: NextRequest) => {
 
 export const GET = async (req: NextRequest) => {
   try {
-    await ConnectDB()
+    await ConnectDB();
     const { searchParams } = new URL(req.url);
     const slug = searchParams.get("slug");
 
@@ -65,12 +66,9 @@ export const GET = async (req: NextRequest) => {
     }
 
     // If no slug, return all products
-    const products = await productModel.find();
+    const products = await productModel.find().sort({ createdAt: -1 });
     return res.json(products, { status: 200 });
   } catch (err) {
     return serverCatchError(err);
   }
 };
-
-
-

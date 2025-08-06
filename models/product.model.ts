@@ -14,9 +14,13 @@ const productSchema = new Schema(
       type: Number,
       required: true,
     },
-    descount: {
-      type: String,
-      default: 0,
+    discount: {
+      type: Number,
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
     },
     slug: {
       type: String,
