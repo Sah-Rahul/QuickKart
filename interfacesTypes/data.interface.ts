@@ -1,6 +1,6 @@
 interface DataInterface {
   data: any
-  total: number
+  total?: number;
 }
 
 export default DataInterface;

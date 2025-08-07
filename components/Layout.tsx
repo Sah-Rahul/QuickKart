@@ -7,12 +7,13 @@ import React, { FC } from "react";
 import "animate.css";
 import Logo from "./AdminLayout/Shared/Logo/Logo";
 import { usePathname } from "next/navigation";
-import { CarryOutOutlined, ShoppingCartOutlined, ShoppingOutlined } from "@ant-design/icons";
+import { ShoppingOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 const Layout: FC<ChildrenInterfaces> = ({ children }) => {
   const pathName = usePathname();
 
-  const path = ["/admin", "/login", "/signup"];
+  const path = ["/admin", "/login", "/signup", "/user"];
 
   const blockRoutes = path.some((path) => pathName.startsWith(path));
 
@@ -26,7 +27,9 @@ const Layout: FC<ChildrenInterfaces> = ({ children }) => {
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div className="text-2xl font-bold text-blue-600">
+              <Link href='/'>
               <Logo />
+              </Link>
             </div>
 
             <nav className="hidden md:flex space-x-6 font-medium">
@@ -67,7 +70,9 @@ const Layout: FC<ChildrenInterfaces> = ({ children }) => {
         <footer className="bg-gray-900 text-gray-200 pt-10 pb-6 mt-12">
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-xl font-semibold mb-2">QuickKart</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                <Logo />
+              </h3>
               <p className="text-sm">
                 Your one-stop shop for quality and savings. Explore now.
               </p>
