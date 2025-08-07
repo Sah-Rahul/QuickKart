@@ -54,9 +54,11 @@ const Layout: FC<ChildrenInterfaces> = ({ children }) => {
                   2
                 </span>
               </button>
+              <Link href={'/user/signup'}>
               <button className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-1.5 rounded-md text-sm font-medium">
-                Login
+                Signup
               </button>
+              </Link>
             </div>
           </div>
         </header>
