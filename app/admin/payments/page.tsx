@@ -1,4 +1,4 @@
-import Payment from '@/components/Payments/page'
+import Payment from '@/components/AdminLayout/Payments/page'
  
 
 const PaymentsRouter = () => {

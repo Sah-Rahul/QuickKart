@@ -1,4 +1,4 @@
-import Setting from "@/components/Settings/page";
+import Setting from "@/components/AdminLayout/Settings/page";
 
 const SettingRouter = () => {
   return <Setting />;

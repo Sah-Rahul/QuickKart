@@ -9,11 +9,10 @@ import {
   ShoppingCartOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import type { MenuProps } from "antd";
 import { Avatar, Breadcrumb, Dropdown, Layout, Menu, theme } from "antd";
 import Link from "next/link";
 import ChildrenInterfaces from "@/interfacesTypes/children.interface";
-import Logo from "../Shared/Logo/Logo";
+import Logo from "./Shared/Logo/Logo";
 import { usePathname } from "next/navigation";
 
 const { Header, Content, Footer, Sider } = Layout;

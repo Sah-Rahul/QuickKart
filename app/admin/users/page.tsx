@@ -1,4 +1,4 @@
-import User from '@/components/User/page'
+import User from '@/components/AdminLayout/User/page'
 import React from 'react'
 
 const userRouter = () => {

@@ -1,4 +1,4 @@
-import Products from "@/components/Products/Products";
+import Products from "@/components/AdminLayout/Products/Products";
 
 const ProductsRouter = () => {
   return <Products />;

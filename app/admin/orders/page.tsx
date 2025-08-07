@@ -1,4 +1,4 @@
-import Orders from '@/components/Orders/page'
+import Orders from '@/components/AdminLayout/Orders/page'
  
 
 const OrdersRouter = () => {
