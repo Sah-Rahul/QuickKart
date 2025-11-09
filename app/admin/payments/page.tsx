@@ -1,10 +1,12 @@
-import Payment from '@/components/AdminLayout/Payments/page'
- 
+import Payments from "@/components/admin/Payments"
 
-const PaymentsRouter = () => {
+ 
+const paymentsRouter = () => {
   return (
-    <Payment />
+    <div>
+      <Payments />
+    </div>
   )
 }
 
-export default PaymentsRouter
+export default paymentsRouter

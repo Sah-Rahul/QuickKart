@@ -1,7 +1,12 @@
-import Setting from "@/components/AdminLayout/Settings/page";
+import Settings from '@/components/admin/Settings'
+import React from 'react'
 
-const SettingRouter = () => {
-  return <Setting />;
-};
+const settingRouter = () => {
+  return (
+    <>
+      <Settings />
+    </>
+  )
+}
 
-export default SettingRouter;
+export default settingRouter

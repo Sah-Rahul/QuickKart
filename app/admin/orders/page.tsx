@@ -1,10 +1,11 @@
-import Orders from '@/components/AdminLayout/Orders/page'
- 
+import React from 'react'
 
-const OrdersRouter = () => {
+const orderRouter = () => {
   return (
-    <Orders />
+    <div>
+      orders
+    </div>
   )
 }
 
-export default OrdersRouter
+export default orderRouter

@@ -1,7 +1,11 @@
-import Products from "@/components/AdminLayout/Products/Products";
+import React from 'react'
 
-const ProductsRouter = () => {
-  return <Products />;
-};
+const productsRouter = () => {
+  return (
+    <div>
+      products
+    </div>
+  )
+}
 
-export default ProductsRouter;
+export default productsRouter

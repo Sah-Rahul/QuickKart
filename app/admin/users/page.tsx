@@ -1,9 +1,10 @@
-import User from '@/components/AdminLayout/User/page'
-import React from 'react'
-
+import Users from '@/components/admin/Users'
+ 
 const userRouter = () => {
   return (
-    <User />
+    <div>
+      <Users />
+    </div>
   )
 }
 

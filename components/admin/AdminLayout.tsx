@@ -11,9 +11,10 @@ import {
 } from "@ant-design/icons";
 import { Avatar, Breadcrumb, Dropdown, Layout, Menu, theme } from "antd";
 import Link from "next/link";
-import ChildrenInterfaces from "@/interfacesTypes/children.interface";
-import Logo from "./Shared/Logo/Logo";
+
 import { usePathname } from "next/navigation";
+import childrenInterfaces from "@/interFaces/childrenInterfaces";
+import Logo from "@/shared/Logo";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -28,12 +29,11 @@ const siderStyle: React.CSSProperties = {
   scrollbarGutter: "stable",
 };
 
-const AdminLayout: FC<ChildrenInterfaces> = ({ children }) => {
+const AdminLayout: FC<childrenInterfaces> = ({ children }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  // get current pathName
   const pathName = usePathname();
 
   const getCurrentPath = (pathname: String) => {
@@ -124,7 +124,7 @@ const AdminLayout: FC<ChildrenInterfaces> = ({ children }) => {
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>
-          ©{new Date().getFullYear()} Created by Rahul Sah 💖❤
+          ©{new Date().getFullYear()} Created and Develop by Rahul Sah
         </Footer>
       </Layout>
     </Layout>

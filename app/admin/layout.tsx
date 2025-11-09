@@ -1,14 +1,9 @@
-import AdminLayout from "@/components/AdminLayout/AdminLayout"
-import ChildrenInterfaces from "@/interfacesTypes/children.interface"
-import { FC } from "react"
+import AdminLayout from "@/components/admin/AdminLayout";
+import childrenInterfaces from "@/interFaces/childrenInterfaces";
+import React, { FC } from "react";
 
- 
-const Adminlayout: FC< ChildrenInterfaces> = ({ children }) => {
-  return (
-    <AdminLayout>
-      { children }
-    </AdminLayout>
-  )
-}
+const AdminLayoutRouter: FC< childrenInterfaces > = ({ children }) => {
+  return <AdminLayout>{children}</AdminLayout>;
+};
 
-export default Adminlayout
+export default AdminLayoutRouter;
