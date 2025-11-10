@@ -14,7 +14,7 @@ import Link from "next/link";
 
 import { usePathname } from "next/navigation";
 import childrenInterfaces from "@/interFaces/childrenInterfaces";
-import Logo from "@/shared/Logo";
+import { Logo } from "@/shared/Logo";
 
 const { Header, Content, Footer, Sider } = Layout;
 

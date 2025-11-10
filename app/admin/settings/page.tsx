@@ -1,12 +1,8 @@
-import Settings from '@/components/admin/Settings'
-import React from 'react'
+import Settings from "@/components/admin/Settings";
+import React from "react";
 
 const settingRouter = () => {
-  return (
-    <>
-      <Settings />
-    </>
-  )
-}
+  return <Settings />;
+};
 
-export default settingRouter
+export default settingRouter;

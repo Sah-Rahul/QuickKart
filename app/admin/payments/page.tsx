@@ -1,12 +1,7 @@
-import Payments from "@/components/admin/Payments"
+import Payments from "@/components/admin/Payments";
 
- 
 const paymentsRouter = () => {
-  return (
-    <div>
-      <Payments />
-    </div>
-  )
-}
+  return <Payments />;
+};
 
-export default paymentsRouter
+export default paymentsRouter;

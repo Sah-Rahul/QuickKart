@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
 
-const Logo = () => {
+export const Logo = () => {
   return (
     <Image
       src="/images/logo.png"
@@ -13,4 +13,4 @@ const Logo = () => {
   );
 };
 
-export default Logo;
+ 

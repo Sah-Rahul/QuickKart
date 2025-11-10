@@ -1,11 +1,7 @@
-import React from 'react'
+import Product from "@/components/admin/Product";
 
 const productsRouter = () => {
-  return (
-    <div>
-      products
-    </div>
-  )
-}
+  return <Product />;
+};
 
-export default productsRouter
+export default productsRouter;
